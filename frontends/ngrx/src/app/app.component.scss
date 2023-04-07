@@ -1,0 +1,23 @@
+.actions {
+  display: flex;
+  justify-content: space-between;
+
+  .updating {
+    display: flex;
+    justify-content: flex-start;
+
+    .delete {
+      margin-left: 15px;
+
+      button {
+        margin-left: 10px;
+        padding: 2em 0;
+        width: 200px;
+      }
+    }
+  }
+}
+
+table {
+  width: 100%;
+}
