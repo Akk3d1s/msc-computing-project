@@ -19,6 +19,7 @@ export class AppController {
     Array.from({ length: 10 }).forEach(() => {
       users.push({
         userId: faker.datatype.uuid(),
+        status: faker.helpers.arrayElement(['ACTIVE', 'PENDING', 'INACTIVE']),
         username: faker.internet.userName(),
         email: faker.internet.email(),
         name: faker.name.firstName(),
