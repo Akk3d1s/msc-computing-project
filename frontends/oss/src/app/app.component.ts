@@ -44,6 +44,9 @@ export class AppComponent implements AfterViewInit {
   displayedColumns: string[] = ['select', 'position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
   selection = new SelectionModel<PeriodicElement>(true, []);
+  statuses: string[] = ['ACTIVE', 'PENDING', 'INACTIVE'];
+  statusSelected: string = '';
+  actionsEnabled: boolean;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -66,6 +69,11 @@ export class AppComponent implements AfterViewInit {
     }
 
     this.selection.select(...this.dataSource.data);
+  }
+
+  /** Show/hide actions on top of table. */
+  toggleActions(): void {
+    this.actionsEnabled = !!this.selection.selected.length;
   }
 
   /** The label for the checkbox on the passed row */
