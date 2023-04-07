@@ -74,6 +74,10 @@ export class AppComponent implements AfterViewInit {
   /** Show/hide actions on top of table. */
   toggleActions(): void {
     this.actionsEnabled = !!this.selection.selected.length;
+
+    if (!this.actionsEnabled) {
+      this.statusSelected = ''; // restore status selection to default.
+    }
   }
 
   /** The label for the checkbox on the passed row */
@@ -82,5 +86,15 @@ export class AppComponent implements AfterViewInit {
       return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+  }
+
+  handleStatusUpdate(): void {
+    console.log('handleStatusUpdate', this.statusSelected);
+    // @todo - should execute state code here
+  }
+
+  handleDelete(): void {
+    console.log('handleDelete');
+    // @todo - should execute state code here
   }
 }
