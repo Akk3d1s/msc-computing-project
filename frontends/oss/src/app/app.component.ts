@@ -40,13 +40,14 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 export class AppComponent implements AfterViewInit {
   title = 'Editing data using OSS';
-
   displayedColumns: string[] = ['select', 'position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
   selection = new SelectionModel<PeriodicElement>(true, []);
   statuses: string[] = ['ACTIVE', 'PENDING', 'INACTIVE'];
   statusSelected: string = '';
+  resourceSelected: string = '10';
   actionsEnabled: boolean;
+  dataSourceSelection: string[] = ['10', '100', '1000', '10000', '100000'];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -86,6 +87,11 @@ export class AppComponent implements AfterViewInit {
       return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+  }
+
+  handleFetchingResource(): void {
+    console.log('handleFetchingResource');
+    // @todo - should execute state code here
   }
 
   handleStatusUpdate(): void {

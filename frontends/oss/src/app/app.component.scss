@@ -1,14 +1,19 @@
 .actions {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
 
-  .delete {
-    margin-left: 15px;
+  .updating {
+    display: flex;
+    justify-content: flex-start;
 
-    button {
-      margin-left: 10px;
-      padding: 2em 0;
-      width: 200px;
+    .delete {
+      margin-left: 15px;
+
+      button {
+        margin-left: 10px;
+        padding: 2em 0;
+        width: 200px;
+      }
     }
   }
 }

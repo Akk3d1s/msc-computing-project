@@ -1,17 +1,29 @@
 <h2>{{this.title}}</h2>
 <div class="actions">
-  <div class="status">
+  <div class="updating">
+    <div class="status">
+      <mat-form-field appearance="fill">
+        <mat-select [disabled]="!actionsEnabled" [(ngModel)]="statusSelected" (selectionChange)="handleStatusUpdate()">
+          <mat-option [value]="''">Update status/es</mat-option>
+          <mat-option *ngFor="let status of statuses" [value]="status">
+            {{status}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="delete">or
+      <button mat-raised-button color="warn" [disabled]="!actionsEnabled" (click)="handleDelete()">Delete record/s</button>
+    </div>
+  </div>
+  <div class="fetching">
     <mat-form-field appearance="fill">
-      <mat-select [disabled]="!actionsEnabled" [(ngModel)]="statusSelected" (selectionChange)="handleStatusUpdate()">
-        <mat-option [value]="''">Update status/es</mat-option>
-        <mat-option *ngFor="let status of statuses" [value]="status">
-          {{status}}
+      <mat-label>Fetch records</mat-label>
+      <mat-select [(ngModel)]="resourceSelected" (selectionChange)="handleFetchingResource()">
+        <mat-option *ngFor="let dss of dataSourceSelection" [value]="dss">
+          {{dss}}
         </mat-option>
       </mat-select>
     </mat-form-field>
-  </div>
-  <div class="delete">or
-    <button mat-raised-button color="warn" [disabled]="!actionsEnabled" (click)="handleDelete()">Delete record/s</button>
   </div>
 </div>
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
