@@ -118,10 +118,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.usersStore.updateUsers(updatedUsers);
     this.selection.clear();
+    this.toggleActions();
   }
 
   handleDelete(): void {
     this.usersStore.deleteUsers(this.selection.selected)
     this.selection.clear();
+    this.toggleActions();
   }
 }
