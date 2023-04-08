@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Delete, Get, HttpStatus, Put, Req, Res } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import { Response } from 'express';
 import * as MOCKED_10_RESPONSE from '../assets/10.json';
@@ -56,5 +56,15 @@ export class AppController {
   @Get('/100000')
   get100000(@Res() res: Response): any {
     res.status(HttpStatus.OK).json(MOCKED_100000_RESPONSE);
+  }
+
+  @Delete('delete')
+  deleteUsers(@Req() request: Request, @Res() res: Response): any {
+    res.status(HttpStatus.OK).json(request.body);
+  }
+
+  @Put('update')
+  updateUsers(@Req() request: Request, @Res() res: Response): any {
+    res.status(HttpStatus.OK).json(request.body);
   }
 }
