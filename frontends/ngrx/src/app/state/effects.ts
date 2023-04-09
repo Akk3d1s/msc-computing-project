@@ -11,9 +11,9 @@ export class UsersEffects {
   getUsers$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.getUsers),
-      map((action: any) => action.payload),
-      mergeMap(() => {
-        return this.usersEndpoint.getUsers('10').pipe(
+      map((action: {amount: string; type: string}) => action.amount),
+      mergeMap((amount) => {
+        return this.usersEndpoint.getUsers(amount).pipe(
           map(users => UserActions.getUsersSuccess({ data: users }))
         );
       })

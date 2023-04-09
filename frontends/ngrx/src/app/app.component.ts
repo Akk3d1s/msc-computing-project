@@ -32,8 +32,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // @todo - add ability to pass resourceSelected as param to getUsers()
-    this.store.dispatch(UserActions.getUsers());
+    this.store.dispatch(UserActions.getUsers({amount: this.resourceSelected}));
 
     this.store.select(UserSelectors.getUsers)
       .pipe(takeUntil(this._unsubscribe$))
@@ -78,8 +77,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleFetchingResource(): void {
-    console.log('handleFetchingResource');
-    // @todo - should execute state code here
+    this.store.dispatch(UserActions.getUsers({amount: this.resourceSelected}));
   }
 
   handleStatusUpdate(): void {
