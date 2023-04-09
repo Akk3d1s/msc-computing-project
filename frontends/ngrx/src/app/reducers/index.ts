@@ -1,19 +1,19 @@
-import { isDevMode } from '@angular/core';
 import {
-  ActionReducer,
-  ActionReducerMap,
-  createFeatureSelector,
-  createSelector,
-  MetaReducer
+  createReducer,
+  on
 } from '@ngrx/store';
+import { User } from 'src/app/user.interface';
+import * as UserActions from '../actions';
 
 export interface State {
-
+  users: User[]
 }
 
-export const reducers: ActionReducerMap<State> = {
-
+export const initialState: State = {
+  users: []
 };
 
-
-export const metaReducers: MetaReducer<State>[] = isDevMode() ? [] : [];
+export const usersReducer = createReducer(
+  initialState,
+  on(UserActions.getUsers, state => ({ ...state })),
+);
