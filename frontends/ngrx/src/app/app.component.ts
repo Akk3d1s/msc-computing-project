@@ -81,12 +81,21 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleStatusUpdate(): void {
-    console.log('handleStatusUpdate', this.statusSelected);
-    // @todo - should execute state code here
+    const updatedUsers = this.selection.selected.map(user => {
+      return {
+        ...user,
+        status: this.statusSelected
+      }
+    });
+
+    this.store.dispatch(UserActions.updateUsers({users: updatedUsers}));
+    this.selection.clear();
+    this.toggleActions();
   }
 
   handleDelete(): void {
-    console.log('handleDelete');
-    // @todo - should execute state code here
+    this.store.dispatch(UserActions.deleteUsers({users: this.selection.selected}));
+    this.selection.clear();
+    this.toggleActions();
   }
 }

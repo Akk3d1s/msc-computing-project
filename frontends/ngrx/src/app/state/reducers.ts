@@ -15,9 +15,22 @@ export const initialState: State = {
 
 export const usersReducer = createReducer(
   initialState,
-  on(UserActions.getUsers, state => ({ ...state })),
-  on(UserActions.getUsersSuccess, (state, { data }) => ({
+  on(UserActions.getUsersSuccess, (state, { users }) => ({
     ...state,
-    users: data
+    users: users
+  })),
+  on(UserActions.updateUsersSuccess, (state, { updatedUsers }) => ({
+    ...state,
+    users: state.users.map(user => {
+      const matchingUser = updatedUsers.find(u => u.userId === user.userId);
+      if (!!matchingUser) {
+        return matchingUser;
+      }
+      return user;
+    }),
+  })),
+  on(UserActions.deleteUsersSuccess, (state, { deletedUsers }) => ({
+    ...state,
+    users: state.users.filter(user => !deletedUsers.find(u => u.userId === user.userId)),
   })),
 );
