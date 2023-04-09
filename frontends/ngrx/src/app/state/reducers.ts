@@ -16,4 +16,8 @@ export const initialState: State = {
 export const usersReducer = createReducer(
   initialState,
   on(UserActions.getUsers, state => ({ ...state })),
+  on(UserActions.getUsersSuccess, (state, { data }) => ({
+    ...state,
+    users: data
+  })),
 );

@@ -2,6 +2,9 @@ import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
+import { Store } from '@ngrx/store';
+import * as UserActions from "./state/actions";
+import * as UserSelectors from "./state/selectors";
 
 export interface PeriodicElement {
   name: string;
@@ -49,7 +52,15 @@ export class AppComponent implements AfterViewInit {
   actionsEnabled: boolean;
   dataSourceSelection: string[] = ['10', '100', '1000', '10000', '100000'];
 
+
+  users$: any;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  constructor( private readonly store: Store){
+    this.store.dispatch(UserActions.getUsers());
+    this.users$ = this.store.select(UserSelectors.getUsers);
+  }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;

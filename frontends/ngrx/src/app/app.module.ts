@@ -10,8 +10,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { StoreModule } from '@ngrx/store';
-import { usersReducer } from './state/reducers';
 import { EffectsModule } from '@ngrx/effects';
+import { reducers } from 'src/app/state';
+import { HttpClientModule } from '@angular/common/http';
+import { UsersEffects } from 'src/app/state/effects';
+import { UsersEndpoint } from 'src/app/endpoints/users.endpoint';
 
 @NgModule({
   declarations: [
@@ -20,16 +23,17 @@ import { EffectsModule } from '@ngrx/effects';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     MatTableModule,
     MatPaginatorModule,
     MatCheckboxModule,
     MatSelectModule,
     FormsModule,
     MatButtonModule,
-    StoreModule.forRoot(usersReducer),
-    EffectsModule.forRoot([])
+    StoreModule.forRoot(reducers),
+    EffectsModule.forRoot([UsersEffects]),
   ],
-  providers: [],
+  providers: [UsersEndpoint],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
