@@ -2,8 +2,8 @@ import {
   createReducer,
   on
 } from '@ngrx/store';
-import { User } from 'src/app/user.interface';
-import * as UserActions from '../actions';
+import { User } from 'src/app/interfaces/user.interface';
+import * as UserActions from './actions';
 
 export interface State {
   users: User[]
