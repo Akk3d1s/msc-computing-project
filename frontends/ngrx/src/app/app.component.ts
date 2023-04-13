@@ -28,9 +28,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   dataSourceSelection: string[] = ['10', '100', '1000', '10000', '100000'];
   private _unsubscribe$: Subject<void> = new Subject<void>();
 
-  private _start = 0
-  private _end = 0;
-
   constructor(private readonly store: Store) {
   }
 
@@ -40,9 +37,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.store.select(UserSelectors.getUsers)
       .pipe(takeUntil(this._unsubscribe$))
       .subscribe((users: User[]) => {
-        this._end = performance.now();
-        console.log('This took ', (this._end - this._start), ' milliseconds')
-        this.dataSource.data = users;
+        if (users.length) {
+          performance.mark('end');
+          const totalMeasure = performance.measure('diff', 'start', 'end');
+          const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
+          this.dataSource.data = users;
+
+          setTimeout(() => {
+            alert(`Duration:  ${totalMeasure.duration - apiMeasure.duration} milliseconds`);
+          })
+        }
       })
   }
 
@@ -82,7 +86,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleFetchingResource(): void {
-    this._start = performance.now();
+    performance.mark('start');
     this.store.dispatch(UserActions.getUsers({amount: this.resourceSelected}));
   }
 

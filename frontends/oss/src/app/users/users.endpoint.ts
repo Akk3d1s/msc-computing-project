@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { User } from 'src/app/users/user.interface';
 
 @Injectable()
@@ -10,8 +10,9 @@ export class UsersEndpoint {
   getUsers(
     amount: string,
   ): Observable<User[]> {
+    performance.mark('fetch_api_start');
     const url = `http://localhost:3000/${amount}`;
-    return this._http.get<User[]>(url);
+    return this._http.get<User[]>(url).pipe(tap(() => performance.mark('fetch_api_end')));
   }
 
   deleteUsers(
