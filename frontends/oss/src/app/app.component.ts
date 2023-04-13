@@ -55,6 +55,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _unsubscribe$: Subject<void> = new Subject<void>();
 
+  private _start = 0
+  private _end = 0;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(private usersStore: UsersStore) {
@@ -66,6 +69,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.usersStore.state$
       .pipe(takeUntil(this._unsubscribe$))
       .subscribe(({users}) => {
+        this._end = performance.now();
+        console.log('This took ', (this._end - this._start), ' milliseconds')
         this.dataSource.data = users;
       });
   }
@@ -105,6 +110,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleFetchingResource(): void {
+    this._start = performance.now();
     this.usersStore.getUsers(this.resourceSelected);
   }
 
