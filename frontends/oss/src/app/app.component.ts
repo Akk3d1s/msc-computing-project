@@ -66,6 +66,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribe$))
       .subscribe(({users}) => {
         if (users.length) {
+          // @TODO - add marks and measures for Updates
+          // @TODO - add marks and measures for Deletes
+          // @TODO - maybe for marks and measures we can re-use the same for all actions?
           performance.mark('end');
           const totalMeasure = performance.measure('diff', 'start', 'end');
           const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
@@ -82,7 +85,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.dataSource.data = users;
 
           // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
-          this.usersEndpoint.updateLog(users.length, totalMeasure.duration - apiMeasure.duration).subscribe();
+          this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, `fetch_${users.length}`).subscribe();
         }
       });
   }
