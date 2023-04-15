@@ -5,6 +5,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { UsersStore } from 'src/app/users/users.store';
 import { Subject, takeUntil } from 'rxjs';
 import { User } from 'src/app/users/user.interface';
+import { UsersEndpoint } from 'src/app/users/users.endpoint';
 
 export interface PeriodicElement {
   name: string;
@@ -57,7 +58,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private usersStore: UsersStore) {
+  constructor(private usersStore: UsersStore, private usersEndpoint: UsersEndpoint) {
   }
 
   ngOnInit(): void {
@@ -68,11 +69,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           performance.mark('end');
           const totalMeasure = performance.measure('diff', 'start', 'end');
           const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
+
+          // cleanup
+          performance.clearMeasures('api_diff');
+          performance.clearMeasures('diff');
+
+          performance.clearMarks('start');
+          performance.clearMarks('end');
+          performance.clearMarks('fetch_api_start');
+          performance.clearMarks('fetch_api_end');
+
           this.dataSource.data = users;
 
-          setTimeout(() => {
-            alert(`Duration:  ${totalMeasure.duration - apiMeasure.duration} milliseconds`);
-          })
+          // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
+          this.usersEndpoint.updateLog(users.length, totalMeasure.duration - apiMeasure.duration).subscribe();
         }
       });
   }

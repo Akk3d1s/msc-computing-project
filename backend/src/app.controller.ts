@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import { promisify } from 'util';
+import { join } from 'path';
 import { Controller, Delete, Get, HttpStatus, Put, Req, Res } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import { Response } from 'express';
@@ -66,5 +69,37 @@ export class AppController {
   @Put('update')
   updateUsers(@Req() request: Request, @Res() res: Response): any {
     res.status(HttpStatus.OK).json(request.body);
+  }
+
+  @Put('log')
+  async createLog(@Req() request: Request, @Res() res: Response): Promise<any> {
+    try {
+      const data = await this.getFile();
+      let logs;
+
+      try {
+        logs = JSON.parse(data);
+      } catch (error) {
+        logs = [];
+      }
+
+      logs.push(request.body); // Append the new log to the existing logs
+
+      await this.writeFile(JSON.stringify(logs, null, 2)); // Write the logs to the file in JSON format
+
+      res.status(HttpStatus.OK).json(request.body);
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Failed to read the file');
+    }
+  }
+
+  async getFile(): Promise<any> {
+    const readFile = promisify(fs.readFile);
+    return await readFile(join(process.cwd(), 'assets/logs.json'), {encoding: 'utf8'});
+  }
+
+  async writeFile(data: string): Promise<void> {
+    const writeFile = promisify(fs.writeFile);
+    return await writeFile(join(process.cwd(), 'assets/logs.json'), data);
   }
 }

@@ -18,8 +18,11 @@
   <div class="fetching">
     <mat-form-field appearance="fill">
       <mat-label>Fetch records</mat-label>
-      <mat-select [(ngModel)]="resourceSelected" (selectionChange)="handleFetchingResource()">
-        <mat-option *ngFor="let dss of dataSourceSelection" [value]="dss">
+      <mat-select
+        data-testid="fetch_records"
+        [(ngModel)]="resourceSelected"
+        (selectionChange)="handleFetchingResource()">
+        <mat-option *ngFor="let dss of dataSourceSelection" [value]="dss" id="{{'fetch_records_' + dss}}">
           {{dss}}
         </mat-option>
       </mat-select>

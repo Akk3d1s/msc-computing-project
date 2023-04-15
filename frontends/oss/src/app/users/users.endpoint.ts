@@ -28,4 +28,9 @@ export class UsersEndpoint {
     const url = `http://localhost:3000/update`;
     return this._http.put<User[]>(url, users);
   }
+
+  updateLog(amount: number, time: number): Observable<any> {
+    const url = `http://localhost:3000/log`;
+    return this._http.put<any>(url, {sma: 'oss', amount, time});
+  }
 }

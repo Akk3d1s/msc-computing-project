@@ -8,6 +8,7 @@ import * as UserSelectors from "./state/selectors";
 import { User } from 'src/app/interfaces/user.interface';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { UsersEndpoint } from 'src/app/endpoints/users.endpoint';
 
 @Component({
   selector: 'app-root',
@@ -28,12 +29,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   dataSourceSelection: string[] = ['10', '100', '1000', '10000', '100000'];
   private _unsubscribe$: Subject<void> = new Subject<void>();
 
-  constructor(private readonly store: Store) {
+  constructor(private readonly store: Store, private usersEndpoint: UsersEndpoint) {
   }
 
   ngOnInit(): void {
-    this.store.dispatch(UserActions.getUsers({amount: this.resourceSelected}));
-
     this.store.select(UserSelectors.getUsers)
       .pipe(takeUntil(this._unsubscribe$))
       .subscribe((users: User[]) => {
@@ -41,11 +40,21 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           performance.mark('end');
           const totalMeasure = performance.measure('diff', 'start', 'end');
           const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
+
+          // cleanup
+          performance.clearMeasures('api_diff');
+          performance.clearMeasures('diff');
+
+          performance.clearMarks('start');
+          performance.clearMarks('end');
+          performance.clearMarks('fetch_api_start');
+          performance.clearMarks('fetch_api_end');
+
           this.dataSource.data = users;
 
-          setTimeout(() => {
-            alert(`Duration:  ${totalMeasure.duration - apiMeasure.duration} milliseconds`);
-          })
+
+          // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
+          this.usersEndpoint.updateLog(users.length, totalMeasure.duration - apiMeasure.duration).subscribe();
         }
       })
   }
