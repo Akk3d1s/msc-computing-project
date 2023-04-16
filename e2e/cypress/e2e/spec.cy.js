@@ -1,6 +1,6 @@
 describe('Fetch records', () => {
     it('Fetch records', () => {
-        cy.visit('http://localhost:5200');
+        cy.visit(Cypress.config().baseUrl); // the same as in docker-compose.yml
 
         for (let i = 0; i < 20; i++) {
             // fetch 100 000

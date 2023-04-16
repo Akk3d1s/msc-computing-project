@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:production": "ng build --configuration production && http-server dist/ngrx",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -22,6 +23,7 @@
     "@angular/router": "^15.2.0",
     "@ngrx/effects": "^15.4.0",
     "@ngrx/store": "^15.4.0",
+    "http-server": "^14.1.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.12.0"

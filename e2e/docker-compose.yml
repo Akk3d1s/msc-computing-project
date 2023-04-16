@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  cypress:
+    image: cypress/included:12.3.0
+    volumes:
+      - ./:/e2e
+    environment:
+      - CYPRESS_baseUrl=http://host.docker.internal:8080
+      - CYPRESS_apiUrl=http://host.docker.internal:3000
+    working_dir: /e2e
+    command: ["cypress", "run"]
