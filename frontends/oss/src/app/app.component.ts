@@ -82,10 +82,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           performance.clearMarks('fetch_api_start');
           performance.clearMarks('fetch_api_end');
 
-          this.dataSource.data = users;
-
           // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
-          this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, `fetch_${users.length}`).subscribe();
+          this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, `fetch_${users.length}`).subscribe(response => {
+            this.dataSource.data = users;
+          });
         }
       });
   }

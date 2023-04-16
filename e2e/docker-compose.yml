@@ -9,4 +9,11 @@ services:
       - CYPRESS_baseUrl=http://host.docker.internal:8080
       - CYPRESS_apiUrl=http://host.docker.internal:3000
     working_dir: /e2e
-    command: ["cypress", "run"]
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 5000M
+    command: [ "run", "--browser", "chrome" ]
+    entrypoint: [ "cypress" ]
+    #command: ["cypress", "run --browser chrome"]
