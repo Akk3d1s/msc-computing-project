@@ -30,8 +30,8 @@ export class UsersEndpoint {
     return this._http.put<User[]>(url, users);
   }
 
-  updateLog(time: number, type: string): Observable<any> {
+  updateLog(value: number, type: string): Observable<any> {
     const url = `${environment.baseUrl}/log`;
-    return this._http.put<any>(url, {sma: 'oss', type, time});
+    return this._http.put<any>(url, {sma: 'oss', type, value});
   }
 }

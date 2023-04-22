@@ -32,7 +32,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private readonly store: Store, private usersEndpoint: UsersEndpoint) {
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.store.select(UserSelectors.getUsers)
       .pipe(takeUntil(this._unsubscribe$))
       .subscribe((users: User[]) => {
