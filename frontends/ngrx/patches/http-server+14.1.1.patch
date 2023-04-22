@@ -1,0 +1,47 @@
+diff --git a/node_modules/http-server/bin/http-server b/node_modules/http-server/bin/http-server
+index 7c597fa..26b86fa 100755
+--- a/node_modules/http-server/bin/http-server
++++ b/node_modules/http-server/bin/http-server
+@@ -55,6 +55,7 @@ if (argv.h || argv.help) {
+     '  -S --tls --ssl   Enable secure request serving with TLS/SSL (HTTPS)',
+     '  -C --cert    Path to TLS cert file (default: cert.pem)',
+     '  -K --key     Path to TLS key file (default: key.pem)',
++    '  -H --header  Add extra header to all responses, eg. "X-Frame-Options: DENY"',
+     '',
+     '  -r --robots        Respond to /robots.txt [User-agent: *\\nDisallow: /]',
+     '  --no-dotfiles      Do not show dotfiles',
+@@ -163,6 +164,16 @@ function listen(port) {
+     }
+   }
+ 
++  var extraHeaders = argv.H || argv.header;
++  if (extraHeaders) {
++    if (Array.isArray(extraHeaders)) {
++      options.extraHeaders = extraHeaders;
++    }
++    else {
++      options.extraHeaders = [extraHeaders];
++    }
++  }
++
+   if (proxy) {
+     try {
+       new url.URL(proxy)
+diff --git a/node_modules/http-server/lib/http-server.js b/node_modules/http-server/lib/http-server.js
+index dfe4c47..79b5fa6 100644
+--- a/node_modules/http-server/lib/http-server.js
++++ b/node_modules/http-server/lib/http-server.js
+@@ -110,6 +110,13 @@ function HttpServer(options) {
+     } : null));
+   }
+ 
++  if (options.extraHeaders) {
++    options.extraHeaders.forEach(function (header) {
++      var split = header.split(/:(.+)?/);
++      this.headers[split[0]] = split[1];
++    }, this);
++  }
++
+   if (options.robots) {
+     before.push(function (req, res) {
+       if (req.url === '/robots.txt') {

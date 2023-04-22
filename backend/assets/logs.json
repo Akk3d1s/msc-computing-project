@@ -1,0 +1,42 @@
+[
+  {
+    "sma": "ngrx",
+    "type": "fetch_100000_ms",
+    "value": 0.4699993133544922
+  },
+  {
+    "sma": "ngrx",
+    "type": "fetch_100000_bytes",
+    "value": 29271699
+  },
+  {
+    "sma": "ngrx",
+    "type": "fetch_10_ms",
+    "value": 0.16499996185302734
+  },
+  {
+    "sma": "ngrx",
+    "type": "fetch_10_bytes",
+    "value": 6128567
+  },
+  {
+    "sma": "ngrx",
+    "type": "fetch_100000_ms",
+    "value": 0.2649998664855957
+  },
+  {
+    "sma": "ngrx",
+    "type": "fetch_100000_bytes",
+    "value": 29671331
+  },
+  {
+    "sma": "ngrx",
+    "type": "fetch_10_ms",
+    "value": 0.19500017166137695
+  },
+  {
+    "sma": "ngrx",
+    "type": "fetch_10_bytes",
+    "value": 6280883
+  }
+]
