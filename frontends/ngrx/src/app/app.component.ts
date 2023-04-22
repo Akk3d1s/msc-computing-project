@@ -32,7 +32,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private readonly store: Store, private usersEndpoint: UsersEndpoint) {
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.store.select(UserSelectors.getUsers)
       .pipe(takeUntil(this._unsubscribe$))
       .subscribe((users: User[]) => {
@@ -52,15 +52,59 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
           // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
-          this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, `fetch_${users.length}`).subscribe(() => {
+          this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, `fetch_${users.length}_ms`).subscribe(() => {
             this.dataSource.data = users;
           });
         }
-      })
+      });
+  }
+
+  scheduleMeasurement(): void {
+    // Check measurement API is available.
+    if (!window.crossOriginIsolated) {
+      console.log('performance.measureUserAgentSpecificMemory() is only available in cross-origin-isolated pages');
+      console.log('See https://web.dev/coop-coep/ to learn more');
+      return;
+    }
+    // @ts-ignore
+    if (!performance.measureUserAgentSpecificMemory) {
+      console.log('performance.measureUserAgentSpecificMemory() is not available in this browser');
+      return;
+    }
+    const interval = this.measurementInterval();
+    console.log(`Running next memory measurement in ${Math.round(interval / 1000)} seconds`);
+    setTimeout(() => this.performMeasurement(), interval);
+  }
+
+  measurementInterval(): number {
+    const MEAN_INTERVAL_IN_MS = 30 * 1000;
+    return -Math.log(Math.random()) * MEAN_INTERVAL_IN_MS;
+  }
+
+  async performMeasurement(): Promise<void> {
+    // 1. Invoke performance.measureUserAgentSpecificMemory().
+    let result;
+    try {
+      // @ts-ignore
+      result = await performance.measureUserAgentSpecificMemory();
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'SecurityError') {
+        console.log('The context is not secure.');
+        return;
+      }
+      // Rethrow other errors.
+      throw error;
+    }
+    // 2. Record the result.
+    console.log('Memory usage:', result);
+    this.usersEndpoint.updateLog(result.bytes, `fetch_${this.resourceSelected}_bytes`).subscribe();
+    // 3. Schedule the next measurement.
+    this.scheduleMeasurement();
   }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
+    this.scheduleMeasurement();
   }
 
   ngOnDestroy(): void {
