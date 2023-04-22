@@ -14,3 +14,9 @@
 - Navigate to e2e.
   - Run `docker-compose down && docker-compose up`
   - This tests should now be executed for the desired frontend (in this case oss).
+
+## Making updates to http-server node module
+- Update files in the module
+- Run `npx patch-package http-server`
+- Commit files
+- See: [patch-package](https://www.npmjs.com/package/patch-package)

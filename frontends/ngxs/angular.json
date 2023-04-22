@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "oss": {
+    "ngxs": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/oss",
+            "outputPath": "dist/ngxs",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -68,14 +68,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "port": 5200
+            "port": 5200,
+            "headers": {
+              "Cross-Origin-Opener-Policy":"same-origin",
+              "Cross-Origin-Embedder-Policy":"require-corp"
+            }
           },
           "configurations": {
             "production": {
-              "browserTarget": "oss:build:production"
+              "browserTarget": "ngxs:build:production"
             },
             "development": {
-              "browserTarget": "oss:build:development"
+              "browserTarget": "ngxs:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -83,7 +87,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "oss:build"
+            "browserTarget": "ngxs:build"
           }
         },
         "test": {
