@@ -66,26 +66,30 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribe$))
       .subscribe(({users}) => {
         if (users.length) {
-          // @TODO - add marks and measures for Updates
-          // @TODO - add marks and measures for Deletes
-          // @TODO - maybe for marks and measures we can re-use the same for all actions?
-          performance.mark('end');
-          const totalMeasure = performance.measure('diff', 'start', 'end');
-          const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
+          try {
+            // @TODO - add marks and measures for Updates
+            // @TODO - add marks and measures for Deletes
+            // @TODO - maybe for marks and measures we can re-use the same for all actions?
+            performance.mark('end');
+            const totalMeasure = performance.measure('diff', 'start', 'end');
+            const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
 
-          // cleanup
-          performance.clearMeasures('api_diff');
-          performance.clearMeasures('diff');
+            // cleanup
+            performance.clearMeasures('api_diff');
+            performance.clearMeasures('diff');
 
-          performance.clearMarks('start');
-          performance.clearMarks('end');
-          performance.clearMarks('fetch_api_start');
-          performance.clearMarks('fetch_api_end');
+            performance.clearMarks('start');
+            performance.clearMarks('end');
+            performance.clearMarks('fetch_api_start');
+            performance.clearMarks('fetch_api_end');
 
-          // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
-          this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, `fetch_${users.length}`).subscribe(response => {
+            // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
+            this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, `fetch_${users.length}`).subscribe(response => {
+              this.dataSource.data = users;
+            });
+          } catch(e) {
             this.dataSource.data = users;
-          });
+          }
         }
       });
   }

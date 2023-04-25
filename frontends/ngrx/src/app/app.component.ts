@@ -37,24 +37,28 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribe$))
       .subscribe((users: User[]) => {
         if (users.length) {
-          performance.mark('end');
-          const totalMeasure = performance.measure('diff', 'start', 'end');
-          const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
+          try {
+            performance.mark('end');
+            const totalMeasure = performance.measure('diff', 'start', 'end');
+            const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
 
-          // cleanup
-          performance.clearMeasures('api_diff');
-          performance.clearMeasures('diff');
+            // cleanup
+            performance.clearMeasures('api_diff');
+            performance.clearMeasures('diff');
 
-          performance.clearMarks('start');
-          performance.clearMarks('end');
-          performance.clearMarks('fetch_api_start');
-          performance.clearMarks('fetch_api_end');
+            performance.clearMarks('start');
+            performance.clearMarks('end');
+            performance.clearMarks('fetch_api_start');
+            performance.clearMarks('fetch_api_end');
 
 
-          // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
-          this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, `fetch_${users.length}_ms`).subscribe(() => {
+            // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
+            this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, `fetch_${users.length}_ms`).subscribe(() => {
+              this.dataSource.data = users;
+            });
+          } catch (e) {
             this.dataSource.data = users;
-          });
+          }
         }
       });
   }
