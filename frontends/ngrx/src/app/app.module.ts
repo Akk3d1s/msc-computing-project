@@ -32,7 +32,6 @@ import { UsersEndpoint } from 'src/app/endpoints/users.endpoint';
     MatButtonModule,
     StoreModule.forRoot(reducers),
     EffectsModule.forRoot([UsersEffects]),
-    MatButtonModule,
   ],
   providers: [UsersEndpoint],
   bootstrap: [AppComponent]
