@@ -27,6 +27,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   resourceSelected: string = '10';
   actionsEnabled: boolean;
   dataSourceSelection: string[] = ['10', '100', '1000', '10000', '100000'];
+  action: string; // the action executed at the time.
+
   private _unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(private readonly store: Store, private usersEndpoint: UsersEndpoint) {
@@ -53,7 +55,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
             // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
-            this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, `fetch_${users.length}_ms`).subscribe(() => {
+            this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, this.action).subscribe(() => {
               this.dataSource.data = users;
             });
           } catch (e) {
@@ -143,11 +145,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleFetchingResource(): void {
+    this.action = `fetch_${this.resourceSelected}`;
     performance.mark('start');
     this.store.dispatch(UserActions.getUsers({amount: this.resourceSelected}));
   }
 
   handleStatusUpdate(): void {
+    this.action = `update_${this.resourceSelected}`;
     const updatedUsers = this.selection.selected.map(user => {
       return {
         ...user,
@@ -155,14 +159,23 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    this.store.dispatch(UserActions.updateUsers({users: updatedUsers}));
     this.selection.clear();
     this.toggleActions();
+
+    performance.mark('start');
+    this.store.dispatch(UserActions.updateUsers({users: updatedUsers}));
   }
 
   handleDelete(): void {
-    this.store.dispatch(UserActions.deleteUsers({users: this.selection.selected}));
+    this.action = `delete_${this.resourceSelected}`;
+    const toBeDeleted = [
+      ...this.selection.selected
+    ]
+
     this.selection.clear();
     this.toggleActions();
+
+    performance.mark('start');
+    this.store.dispatch(UserActions.deleteUsers({users: toBeDeleted}));
   }
 }
