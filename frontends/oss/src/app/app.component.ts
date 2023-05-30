@@ -22,6 +22,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   resourceSelected: string = '10';
   actionsEnabled: boolean;
   dataSourceSelection: string[] = ['10', '100', '1000', '10000', '100000'];
+  action: string; // the action executed at the time.
 
   private _unsubscribe$: Subject<void> = new Subject<void>();
 
@@ -53,7 +54,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             performance.clearMarks('fetch_api_end');
 
             // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
-            this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, `fetch_${users.length}`).subscribe(response => {
+            this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, this.action).subscribe(response => {
               this.dataSource.data = users;
             });
           } catch(e) {
@@ -101,7 +102,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // 2. Record the result.
     console.log('Memory usage:', result);
-    this.usersEndpoint.updateLog(result.bytes, `fetch_${this.resourceSelected}_bytes`).subscribe();
+    this.usersEndpoint.updateLog(result.bytes, `${this.action}_bytes`).subscribe();
     // 3. Schedule the next measurement.
     this.scheduleMeasurement();
   }
@@ -143,11 +144,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleFetchingResource(): void {
+    this.action = `fetch_${this.resourceSelected}`;
     performance.mark('start');
     this.usersStore.getUsers(this.resourceSelected);
   }
 
   handleStatusUpdate(): void {
+    this.action = `update_${this.resourceSelected}`;
     const updatedUsers = this.selection.selected.map(user => {
         return {
           ...user,
@@ -155,14 +158,22 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
 
-    this.usersStore.updateUsers(updatedUsers);
     this.selection.clear();
     this.toggleActions();
+
+    performance.mark('start');
+    this.usersStore.updateUsers(updatedUsers);
   }
 
   handleDelete(): void {
-    this.usersStore.deleteUsers(this.selection.selected)
+    this.action = `delete_${this.resourceSelected}`;
+    const toBeDeleted = [
+      ...this.selection.selected
+    ]
     this.selection.clear();
     this.toggleActions();
+
+    performance.mark('start');
+    this.usersStore.deleteUsers(toBeDeleted)
   }
 }

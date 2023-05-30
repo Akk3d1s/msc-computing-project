@@ -19,15 +19,17 @@ export class UsersEndpoint {
   deleteUsers(
     users: User[],
   ): Observable<User[]> {
+    performance.mark('fetch_api_start');
     const url = `${environment.baseUrl}/delete`;
-    return this._http.delete<User[]>(url, {body: users});
+    return this._http.delete<User[]>(url, {body: users}).pipe(tap(() => performance.mark('fetch_api_end')));
   }
 
   updateUsers(
     users: User[],
   ): Observable<User[]> {
+    performance.mark('fetch_api_start');
     const url = `${environment.baseUrl}/update`;
-    return this._http.put<User[]>(url, users);
+    return this._http.put<User[]>(url, users).pipe(tap(() => performance.mark('fetch_api_end')));
   }
 
   updateLog(value: number, type: string): Observable<any> {
