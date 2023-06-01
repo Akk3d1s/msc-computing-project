@@ -137,7 +137,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngAfterViewInit(): void {
         this.dataSource.paginator = this.paginator;
-        this.scheduleMeasurement();
+        // this.scheduleMeasurement();
     }
 
     ngOnDestroy(): void {
