@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { promisify } from 'util';
 import { join } from 'path';
-import { Controller, Delete, Get, HttpStatus, Put, Req, Res } from '@nestjs/common';
+import { Controller, Delete, Get, HttpStatus, Post, Put, Req, Res } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
 import { Response } from 'express';
 import * as MOCKED_10_RESPONSE from '../assets/10.json';
@@ -68,6 +68,11 @@ export class AppController {
 
   @Put('update')
   updateUsers(@Req() request: Request, @Res() res: Response): any {
+    res.status(HttpStatus.OK).json(request.body);
+  }
+
+  @Post('add')
+  addUser(@Req() request: Request, @Res() res: Response): any {
     res.status(HttpStatus.OK).json(request.body);
   }
 
