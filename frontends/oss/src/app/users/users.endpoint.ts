@@ -16,22 +16,6 @@ export class UsersEndpoint {
     return this._http.get<User[]>(url).pipe(tap(() => performance.mark('fetch_api_end')));
   }
 
-  deleteUsers(
-    users: User[],
-  ): Observable<User[]> {
-    performance.mark('fetch_api_start');
-    const url = `${environment.baseUrl}/delete`;
-    return this._http.delete<User[]>(url, {body: users}).pipe(tap(() => performance.mark('fetch_api_end')));
-  }
-
-  updateUsers(
-    users: User[],
-  ): Observable<User[]> {
-    performance.mark('fetch_api_start');
-    const url = `${environment.baseUrl}/update`;
-    return this._http.put<User[]>(url, users).pipe(tap(() => performance.mark('fetch_api_end')));
-  }
-
   updateLog(value: number, type: string): Observable<any> {
     const url = `${environment.baseUrl}/log`;
     return this._http.put<any>(url, {sma: 'oss', type, value});

@@ -56,7 +56,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             try {
               performance.mark('end');
               const totalMeasure = performance.measure('diff', 'start', 'end');
-              
+
               if (this.action === 'add') {
                 // cleanup
                 performance.clearMeasures('diff');

@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
 import { UsersStore } from 'src/app/users/users.store';
 import { Subject, takeUntil } from 'rxjs';
 import { User } from 'src/app/users/user.interface';
@@ -14,14 +13,28 @@ import { UsersEndpoint } from 'src/app/users/users.endpoint';
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'Editing data using OSS';
-  displayedColumns: string[] = ['select', 'userId', 'status', 'username', 'email', 'name', 'surname', 'birthdate', 'registeredAt'];
+  displayedColumns: string[] = ['userId', 'status', 'username', 'email', 'name', 'surname', 'birthdate', 'registeredAt'];
   dataSource = new MatTableDataSource<User>([]);
-  selection = new SelectionModel<User>(true, []);
-  statuses: string[] = ['ACTIVE', 'PENDING', 'INACTIVE'];
-  statusSelected: string = '';
-  resourceSelected: string = '10';
-  actionsEnabled: boolean;
-  dataSourceSelection: string[] = ['10', '100', '1000', '10000', '100000'];
+  resourceSelected: string = '';
+  dataSourceSelection: { value: string; label: string }[] = [
+    {
+      value: '', label: 'Select'
+    },
+    {
+      value: '10', label: '10'
+    },
+    {
+      value: '100', label: '100'
+    },
+    {
+      value: '1000', label: '1000'
+    },
+    {
+      value: '10000', label: '10000'
+    },
+    {
+      value: '100000', label: '100000'
+    }];
   action: string; // the action executed at the time.
 
   private _unsubscribe$: Subject<void> = new Subject<void>();
@@ -37,26 +50,37 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe(({users}) => {
         if (users.length) {
           try {
-            // @TODO - add marks and measures for Updates
-            // @TODO - add marks and measures for Deletes
-            // @TODO - maybe for marks and measures we can re-use the same for all actions?
             performance.mark('end');
             const totalMeasure = performance.measure('diff', 'start', 'end');
-            const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
 
-            // cleanup
-            performance.clearMeasures('api_diff');
-            performance.clearMeasures('diff');
+            if (this.action === 'add') {
+              // cleanup
+              performance.clearMeasures('diff');
 
-            performance.clearMarks('start');
-            performance.clearMarks('end');
-            performance.clearMarks('fetch_api_start');
-            performance.clearMarks('fetch_api_end');
+              performance.clearMarks('start');
+              performance.clearMarks('end');
 
-            // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
-            this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, this.action).subscribe(response => {
-              this.dataSource.data = users;
-            });
+
+              this.usersEndpoint.updateLog(totalMeasure.duration, this.action).subscribe(() => {
+                this.dataSource.data = users;
+              });
+            } else {
+              const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
+
+              // cleanup
+              performance.clearMeasures('api_diff');
+              performance.clearMeasures('diff');
+
+              performance.clearMarks('start');
+              performance.clearMarks('end');
+              performance.clearMarks('fetch_api_start');
+              performance.clearMarks('fetch_api_end');
+
+              // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
+              this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, this.action).subscribe(response => {
+                this.dataSource.data = users;
+              });
+            }
           } catch(e) {
             this.dataSource.data = users;
           }
@@ -117,63 +141,51 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this._unsubscribe$.complete();
   }
 
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
-  }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  toggleAllRows() {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-      return;
-    }
-
-    this.selection.select(...this.dataSource.data);
-  }
-
-  /** Show/hide actions on top of table. */
-  toggleActions(): void {
-    this.actionsEnabled = !!this.selection.selected.length;
-
-    if (!this.actionsEnabled) {
-      this.statusSelected = ''; // restore status selection to default.
-    }
-  }
-
   handleFetchingResource(): void {
     this.action = `fetch_${this.resourceSelected}`;
     performance.mark('start');
     this.usersStore.getUsers(this.resourceSelected);
   }
 
-  handleStatusUpdate(): void {
-    this.action = `update_${this.resourceSelected}`;
-    const updatedUsers = this.selection.selected.map(user => {
-        return {
-          ...user,
-          status: this.statusSelected
-        }
-      });
+  addUser(): void {
+    this.action = 'add';
 
-    this.selection.clear();
-    this.toggleActions();
+    const user: User = {
+      userId: this.generateUUID(),
+      status: 'PENDING',
+      username: 'test-user',
+      email: 'test@mail.com',
+      name: 'John',
+      surname: 'Doe',
+      birthdate: '1980-01-01',
+      registeredAt: this.getRegisteredDate()
+    };
 
     performance.mark('start');
-    this.usersStore.updateUsers(updatedUsers);
+    this.usersStore.addUser(user);
   }
 
-  handleDelete(): void {
-    this.action = `delete_${this.resourceSelected}`;
-    const toBeDeleted = [
-      ...this.selection.selected
-    ]
-    this.selection.clear();
-    this.toggleActions();
+  private generateUUID() {
+    const hexDigits = '0123456789abcdef';
+    let uuid = '';
 
-    performance.mark('start');
-    this.usersStore.deleteUsers(toBeDeleted)
+    for (let i = 0; i < 36; i++) {
+      if (i === 8 || i === 13 || i === 18 || i === 23) {
+        uuid += '-';
+      } else if (i === 14) {
+        uuid += '4';
+      } else if (i === 19) {
+        uuid += hexDigits[(Math.random() * 4 | 8)];
+      } else {
+        uuid += hexDigits[(Math.random() * 16) | 0];
+      }
+    }
+
+    return uuid;
+  }
+
+  private getRegisteredDate(): string {
+    const currentDate = new Date();
+    return currentDate.toISOString();
   }
 }
