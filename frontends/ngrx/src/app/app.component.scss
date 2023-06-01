@@ -1,23 +1,23 @@
-.actions {
-  display: flex;
-  justify-content: space-between;
+.container {
+  padding: 20px;
 
-  .updating {
+  .actions {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
 
-    .delete {
-      margin-left: 15px;
+    button {
+      padding: 2em 0;
+      width: 200px;
+      margin-top: 10px;
+    }
 
-      button {
-        margin-left: 10px;
-        padding: 2em 0;
-        width: 200px;
-      }
+    div {
+      margin-top: 10px;
     }
   }
-}
 
-table {
-  width: 100%;
+  table {
+    width: 100%;
+  }
 }
