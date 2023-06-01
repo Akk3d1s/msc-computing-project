@@ -8,17 +8,10 @@ export namespace Users {
         }
     }
 
-    export class Update {
-        static readonly type = '[App Component] Update Users';
+    export class Add {
+        static readonly type = '[App Component] Add User';
 
-        constructor(public users: User[]) {
-        }
-    }
-
-    export class Delete {
-        static readonly type = '[App Component] Delete Users';
-
-        constructor(public users: User[]) {
+        constructor(public user: User) {
         }
     }
 }

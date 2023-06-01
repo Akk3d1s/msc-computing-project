@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { Store, Select } from '@ngxs/store';
 import { Users } from 'src/app/state/actions';
@@ -19,14 +18,29 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @Select((state: any) => state.users) users$: Observable<User[]>;
 
   title = 'Editing data using NGXS';
-  displayedColumns: string[] = ['select', 'userId', 'status', 'username', 'email', 'name', 'surname', 'birthdate', 'registeredAt'];
+  displayedColumns: string[] = ['userId', 'status', 'username', 'email', 'name', 'surname', 'birthdate', 'registeredAt'];
   dataSource = new MatTableDataSource<User>([]);
-  selection = new SelectionModel<User>(true, []);
-  statuses: string[] = ['ACTIVE', 'PENDING', 'INACTIVE'];
-  statusSelected: string = '';
-  resourceSelected: string = '10';
+  resourceSelected: string = '';
   actionsEnabled: boolean;
-  dataSourceSelection: string[] = ['10', '100', '1000', '10000', '100000'];
+  dataSourceSelection: { value: string; label: string }[] = [
+    {
+      value: '', label: 'Select'
+    },
+    {
+      value: '10', label: '10'
+    },
+    {
+      value: '100', label: '100'
+    },
+    {
+      value: '1000', label: '1000'
+    },
+    {
+      value: '10000', label: '10000'
+    },
+    {
+      value: '100000', label: '100000'
+    }];
   action: string; // the action executed at the time.
 
   private _unsubscribe$: Subject<void> = new Subject<void>();
@@ -42,22 +56,36 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             try {
               performance.mark('end');
               const totalMeasure = performance.measure('diff', 'start', 'end');
-              const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
+              
+              if (this.action === 'add') {
+                // cleanup
+                performance.clearMeasures('diff');
 
-              // cleanup
-              performance.clearMeasures('api_diff');
-              performance.clearMeasures('diff');
-
-              performance.clearMarks('start');
-              performance.clearMarks('end');
-              performance.clearMarks('fetch_api_start');
-              performance.clearMarks('fetch_api_end');
+                performance.clearMarks('start');
+                performance.clearMarks('end');
 
 
-              // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
-              this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, this.action).subscribe(() => {
-                this.dataSource.data = users;
-              });
+                this.usersEndpoint.updateLog(totalMeasure.duration, this.action).subscribe(() => {
+                  this.dataSource.data = users;
+                });
+              } else {
+                const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
+
+                // cleanup
+                performance.clearMeasures('api_diff');
+                performance.clearMeasures('diff');
+
+                performance.clearMarks('start');
+                performance.clearMarks('end');
+                performance.clearMarks('fetch_api_start');
+                performance.clearMarks('fetch_api_end');
+
+
+                // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
+                this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, this.action).subscribe(() => {
+                  this.dataSource.data = users;
+                });
+              }
             } catch (e) {
               this.dataSource.data = users;
             }
@@ -119,64 +147,51 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this._unsubscribe$.complete();
   }
 
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
-  }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  toggleAllRows() {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-      return;
-    }
-
-    this.selection.select(...this.dataSource.data);
-  }
-
-  /** Show/hide actions on top of table. */
-  toggleActions(): void {
-    this.actionsEnabled = !!this.selection.selected.length;
-
-    if (!this.actionsEnabled) {
-      this.statusSelected = ''; // restore status selection to default.
-    }
-  }
-
   handleFetchingResource(): void {
     this.action = `fetch_${this.resourceSelected}`;
     performance.mark('start');
     this.store.dispatch(new Users.Get(this.resourceSelected));
   }
 
-  handleStatusUpdate(): void {
-    this.action = `update_${this.resourceSelected}`;
-    const updatedUsers = this.selection.selected.map(user => {
-      return {
-        ...user,
-        status: this.statusSelected
-      }
-    });
+  addUser(): void {
+    this.action = 'add';
 
-    this.selection.clear();
-    this.toggleActions();
+    const user: User = {
+      userId: this.generateUUID(),
+      status: 'PENDING',
+      username: 'test-user',
+      email: 'test@mail.com',
+      name: 'John',
+      surname: 'Doe',
+      birthdate: '1980-01-01',
+      registeredAt: this.getRegisteredDate()
+    };
 
     performance.mark('start');
-    this.store.dispatch(new Users.Update(updatedUsers));
+    this.store.dispatch(new Users.Add(user));
   }
 
-  handleDelete(): void {
-    this.action = `delete_${this.resourceSelected}`;
-    const toBeDeleted = [
-      ...this.selection.selected
-    ]
+  private generateUUID() {
+    const hexDigits = '0123456789abcdef';
+    let uuid = '';
 
-    this.selection.clear();
-    this.toggleActions();
+    for (let i = 0; i < 36; i++) {
+      if (i === 8 || i === 13 || i === 18 || i === 23) {
+        uuid += '-';
+      } else if (i === 14) {
+        uuid += '4';
+      } else if (i === 19) {
+        uuid += hexDigits[(Math.random() * 4 | 8)];
+      } else {
+        uuid += hexDigits[(Math.random() * 16) | 0];
+      }
+    }
 
-    performance.mark('start');
-    this.store.dispatch(new Users.Delete(this.selection.selected));
+    return uuid;
+  }
+
+  private getRegisteredDate(): string {
+    const currentDate = new Date();
+    return currentDate.toISOString();
   }
 }

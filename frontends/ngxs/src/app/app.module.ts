@@ -12,23 +12,33 @@ import { NgxsModule } from '@ngxs/store';
 import { UsersState } from 'src/app/state/state';
 import { UsersEndpoint } from 'src/app/endpoints/users.endpoint';
 import { HttpClientModule } from '@angular/common/http';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatOptionModule } from '@angular/material/core';
+import { NgForOf } from '@angular/common';
 
 @NgModule({
   declarations: [
     AppComponent
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatCheckboxModule,
-    MatSelectModule,
-    FormsModule,
-    MatButtonModule,
-    NgxsModule.forRoot([UsersState]),
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatCheckboxModule,
+        MatSelectModule,
+        FormsModule,
+        MatButtonModule,
+        NgxsModule.forRoot([UsersState]),
+        MatButtonModule,
+        MatFormFieldModule,
+        MatOptionModule,
+        MatPaginatorModule,
+        MatSelectModule,
+        MatTableModule,
+        NgForOf,
+    ],
   providers: [UsersEndpoint],
   bootstrap: [AppComponent]
 })
