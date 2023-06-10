@@ -1,0 +1,47 @@
+[
+  {
+    "sma": "ngrx",
+    "type": "fetch_10",
+    "value": 0.39499998092651367
+  },
+  {
+    "sma": "ngrx",
+    "type": "fetch_10_bytes",
+    "value": {
+      "breakdown": [
+        {
+          "attribution": [],
+          "bytes": 204072,
+          "types": [
+            "DOM"
+          ]
+        },
+        {
+          "attribution": [],
+          "bytes": 1189799,
+          "types": [
+            "Shared"
+          ]
+        },
+        {
+          "attribution": [],
+          "bytes": 0,
+          "types": []
+        },
+        {
+          "attribution": [
+            {
+              "scope": "Window",
+              "url": "http://127.0.0.1:8080/"
+            }
+          ],
+          "bytes": 3605232,
+          "types": [
+            "JavaScript"
+          ]
+        }
+      ],
+      "bytes": 4999103
+    }
+  }
+]
