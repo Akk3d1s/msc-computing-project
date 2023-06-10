@@ -85,11 +85,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                                 this.dataSource.data = users;
                             });
                         }
+
+                        this.performMemoryMeasurement();
                     } catch (e) {
                         this.dataSource.data = users;
                     }
-
-                    this.performMemoryMeasurement();
                 }
             });
     }
