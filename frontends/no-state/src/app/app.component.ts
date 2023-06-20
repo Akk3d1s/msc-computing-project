@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subject } from 'rxjs';
+import { of, Subject, takeUntil } from 'rxjs';
 import { User } from 'src/app/users/user.interface';
+import { UsersEndpoint } from 'src/app/users/users.endpoint';
 
 @Component({
   selector: 'app-root',
@@ -39,7 +40,71 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  ngOnInit(): void {}
+  constructor(private usersEndpoint: UsersEndpoint) {
+  }
+
+  ngOnInit(): void {
+    of({users: []})
+      .pipe(takeUntil(this._unsubscribe$))
+      .subscribe(({users}) => {
+        if (users.length) {
+          try {
+            performance.mark('end');
+            const totalMeasure = performance.measure('diff', 'start', 'end');
+
+            if (this.action === 'add') {
+              // cleanup
+              performance.clearMeasures('diff');
+
+              performance.clearMarks('start');
+              performance.clearMarks('end');
+
+
+              this.usersEndpoint.updateLog(totalMeasure.duration, this.action).subscribe(() => {
+                this.dataSource.data = users;
+              });
+            } else {
+              const apiMeasure = performance.measure('api_diff', 'fetch_api_start', 'fetch_api_end');
+
+              // cleanup
+              performance.clearMeasures('api_diff');
+              performance.clearMeasures('diff');
+
+              performance.clearMarks('start');
+              performance.clearMarks('end');
+              performance.clearMarks('fetch_api_start');
+              performance.clearMarks('fetch_api_end');
+
+              // Good practices for updating logs is beyond the scope of this research, thus we will call the endpoint directly without proper state management approaches.
+              this.usersEndpoint.updateLog(totalMeasure.duration - apiMeasure.duration, this.action).subscribe(response => {
+                this.dataSource.data = users;
+              });
+            }
+
+            this.performMemoryMeasurement();
+          } catch(e) {
+            this.dataSource.data = users;
+          }
+        }
+      });
+  }
+
+  async performMemoryMeasurement(): Promise<void> {
+    console.log('Running memory measurement...');
+    let result;
+    try {
+      // @ts-ignore
+      result = await performance.measureUserAgentSpecificMemory();
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'SecurityError') {
+        console.log('The context is not secure.');
+        return;
+      }
+      throw error;
+    }
+    console.log('Memory usage:', result);
+    this.usersEndpoint.updateLog(result, `fetch_${this.resourceSelected}_bytes`).subscribe();
+  }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
@@ -52,9 +117,47 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleFetchingResource(): void {
     this.action = `fetch_${this.resourceSelected}`;
+    performance.mark('start');
   }
 
   addUser(): void {
     this.action = 'add';
+
+    const user: User = {
+      userId: this.generateUUID(),
+      status: 'PENDING',
+      username: 'test-user',
+      email: 'test@mail.com',
+      name: 'John',
+      surname: 'Doe',
+      birthdate: '1980-01-01',
+      registeredAt: this.getRegisteredDate()
+    };
+
+    performance.mark('start');
+  }
+
+  private generateUUID() {
+    const hexDigits = '0123456789abcdef';
+    let uuid = '';
+
+    for (let i = 0; i < 36; i++) {
+      if (i === 8 || i === 13 || i === 18 || i === 23) {
+        uuid += '-';
+      } else if (i === 14) {
+        uuid += '4';
+      } else if (i === 19) {
+        uuid += hexDigits[(Math.random() * 4 | 8)];
+      } else {
+        uuid += hexDigits[(Math.random() * 16) | 0];
+      }
+    }
+
+    return uuid;
+  }
+
+  private getRegisteredDate(): string {
+    const currentDate = new Date();
+    return currentDate.toISOString();
   }
 }
