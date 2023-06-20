@@ -11,7 +11,7 @@ import { UsersEndpoint } from 'src/app/users/users.endpoint';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  title = 'Editing data using OSS';
+  title = 'Editing data using no state';
   displayedColumns: string[] = ['userId', 'status', 'username', 'email', 'name', 'surname', 'birthdate', 'registeredAt'];
   dataSource = new MatTableDataSource<User>([]);
   resourceSelected: string = '';
@@ -118,6 +118,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   handleFetchingResource(): void {
     this.action = `fetch_${this.resourceSelected}`;
     performance.mark('start');
+
+    this.usersEndpoint.getUsers(this.resourceSelected).subscribe();
   }
 
   addUser(): void {
@@ -133,6 +135,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       birthdate: '1980-01-01',
       registeredAt: this.getRegisteredDate()
     };
+
+    console.log('user', user);
 
     performance.mark('start');
   }
