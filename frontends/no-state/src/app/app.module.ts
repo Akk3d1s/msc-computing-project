@@ -9,8 +9,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { UsersStore } from 'src/app/users/users.store';
-import { UsersEndpoint } from 'src/app/users/users.endpoint';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
@@ -27,10 +25,6 @@ import { HttpClientModule } from '@angular/common/http';
     MatSelectModule,
     FormsModule,
     MatButtonModule
-  ],
-  providers: [
-    UsersStore,
-    UsersEndpoint
   ],
   bootstrap: [AppComponent]
 })
