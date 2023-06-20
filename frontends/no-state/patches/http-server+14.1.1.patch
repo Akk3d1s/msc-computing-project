@@ -1,0 +1,121 @@
+diff --git a/node_modules/http-server/bin/http-server b/node_modules/http-server/bin/http-server
+index 7c597fa..58808ff 100755
+--- a/node_modules/http-server/bin/http-server
++++ b/node_modules/http-server/bin/http-server
+@@ -3,13 +3,13 @@
+ 'use strict';
+ 
+ var chalk     = require('chalk'),
+-    os         = require('os'),
+-    httpServer = require('../lib/http-server'),
+-    portfinder = require('portfinder'),
+-    opener     = require('opener'),
++  os         = require('os'),
++  httpServer = require('../lib/http-server'),
++  portfinder = require('portfinder'),
++  opener     = require('opener'),
+ 
+-    fs         = require('fs'),
+-    url        = require('url');
++  fs         = require('fs'),
++  url        = require('url');
+ var argv = require('minimist')(process.argv.slice(2), {
+   alias: {
+     tls: 'ssl'
+@@ -55,6 +55,7 @@ if (argv.h || argv.help) {
+     '  -S --tls --ssl   Enable secure request serving with TLS/SSL (HTTPS)',
+     '  -C --cert    Path to TLS cert file (default: cert.pem)',
+     '  -K --key     Path to TLS key file (default: key.pem)',
++    '  -H --header  Add extra header to all responses, eg. "X-Frame-Options: DENY"',
+     '',
+     '  -r --robots        Respond to /robots.txt [User-agent: *\\nDisallow: /]',
+     '  --no-dotfiles      Do not show dotfiles',
+@@ -66,14 +67,14 @@ if (argv.h || argv.help) {
+ }
+ 
+ var port = argv.p || argv.port || parseInt(process.env.PORT, 10),
+-    host = argv.a || '0.0.0.0',
+-    tls = argv.S || argv.tls,
+-    sslPassphrase = process.env.NODE_HTTP_SERVER_SSL_PASSPHRASE,
+-    proxy = argv.P || argv.proxy,
+-    proxyOptions = argv['proxy-options'],
+-    utc = argv.U || argv.utc,
+-    version = argv.v || argv.version,
+-    logger;
++  host = argv.a || '0.0.0.0',
++  tls = argv.S || argv.tls,
++  sslPassphrase = process.env.NODE_HTTP_SERVER_SSL_PASSPHRASE,
++  proxy = argv.P || argv.proxy,
++  proxyOptions = argv['proxy-options'],
++  utc = argv.U || argv.utc,
++  version = argv.v || argv.version,
++  logger;
+ 
+ var proxyOptionsBooleanProps = [
+   'ws', 'xfwd', 'secure', 'toProxy', 'prependPath', 'ignorePath', 'changeOrigin',
+@@ -94,8 +95,8 @@ if (!argv.s && !argv.silent) {
+     request: function (req, res, error) {
+       var date = utc ? new Date().toUTCString() : new Date();
+       var ip = argv['log-ip']
+-          ? req.headers['x-forwarded-for'] || '' +  req.connection.remoteAddress
+-          : '';
++        ? req.headers['x-forwarded-for'] || '' +  req.connection.remoteAddress
++        : '';
+       if (error) {
+         logger.info(
+           '[%s] %s "%s %s" Error (%s): "%s"',
+@@ -163,6 +164,16 @@ function listen(port) {
+     }
+   }
+ 
++  var extraHeaders = argv.H || argv.header;
++  if (extraHeaders) {
++    if (Array.isArray(extraHeaders)) {
++      options.extraHeaders = extraHeaders;
++    }
++    else {
++      options.extraHeaders = [extraHeaders];
++    }
++  }
++
+   if (proxy) {
+     try {
+       new url.URL(proxy)
+diff --git a/node_modules/http-server/lib/http-server.js b/node_modules/http-server/lib/http-server.js
+index dfe4c47..d2762f3 100644
+--- a/node_modules/http-server/lib/http-server.js
++++ b/node_modules/http-server/lib/http-server.js
+@@ -48,8 +48,8 @@ function HttpServer(options) {
+   this.cache = (
+     // eslint-disable-next-line no-nested-ternary
+     options.cache === undefined ? 3600 :
+-    // -1 is a special case to turn off caching.
+-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#Preventing_caching
++      // -1 is a special case to turn off caching.
++      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#Preventing_caching
+       options.cache === -1 ? 'no-cache, no-store, must-revalidate' :
+         options.cache // in seconds.
+   );
+@@ -64,7 +64,7 @@ function HttpServer(options) {
+       : options.ext;
+   }
+   this.contentType = options.contentType ||
+-    this.ext === 'html' ? 'text/html' : 'application/octet-stream';
++  this.ext === 'html' ? 'text/html' : 'application/octet-stream';
+ 
+   var before = options.before ? options.before.slice() : [];
+ 
+@@ -110,6 +110,13 @@ function HttpServer(options) {
+     } : null));
+   }
+ 
++  if (options.extraHeaders) {
++    options.extraHeaders.forEach(function (header) {
++      var split = header.split(/:(.+)?/);
++      this.headers[split[0]] = split[1];
++    }, this);
++  }
++
+   if (options.robots) {
+     before.push(function (req, res) {
+       if (req.url === '/robots.txt') {

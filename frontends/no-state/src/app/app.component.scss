@@ -1,0 +1,23 @@
+.container {
+  padding: 20px;
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    button {
+      padding: 2em 0;
+      width: 200px;
+      margin-top: 10px;
+    }
+
+    div {
+      margin-top: 10px;
+    }
+  }
+
+  table {
+    width: 100%;
+  }
+}
