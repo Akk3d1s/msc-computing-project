@@ -5,8 +5,7 @@ import { Store } from '@ngrx/store';
 import * as UserActions from './state/actions';
 import * as UserSelectors from './state/selectors';
 import { User } from 'src/app/interfaces/user.interface';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, takeUntil } from 'rxjs';
 import { UsersEndpoint } from 'src/app/endpoints/users.endpoint';
 
 @Component({
