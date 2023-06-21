@@ -43,7 +43,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _unsubscribe$: Subject<void> = new Subject<void>();
 
-    constructor(private readonly store: Store, private usersEndpoint: UsersEndpoint) {
+    constructor(private store: Store, private usersEndpoint: UsersEndpoint) {
     }
 
     ngOnInit() {
