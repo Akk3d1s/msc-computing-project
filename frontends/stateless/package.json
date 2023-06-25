@@ -5,7 +5,7 @@
     "postinstall": "patch-package",
     "ng": "ng",
     "start": "ng serve",
-    "start:production": "ng build --configuration production && http-server dist/oss -H \"Cross-Origin-Opener-Policy:same-origin\" -H \"Cross-Origin-Embedder-Policy:require-corp\"",
+    "start:production": "ng build --configuration production && http-server dist/stateless -H \"Cross-Origin-Opener-Policy:same-origin\" -H \"Cross-Origin-Embedder-Policy:require-corp\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
