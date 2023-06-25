@@ -11,7 +11,7 @@ import { UsersEndpoint } from 'src/app/users/users.endpoint';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  title = 'Editing data using no state';
+  title = 'Editing data using App';
   displayedColumns: string[] = ['userId', 'status', 'username', 'email', 'name', 'surname', 'birthdate', 'registeredAt'];
   dataSource = new MatTableDataSource<User>([]);
   resourceSelected: string = '';

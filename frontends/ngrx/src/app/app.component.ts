@@ -16,7 +16,7 @@ import { UsersEndpoint } from 'src/app/endpoints/users.endpoint';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatPaginator) paginator: MatPaginator;
 
-    title = 'Editing data using NGRX';
+    title = 'Editing data using App';
     displayedColumns: string[] = ['userId', 'status', 'username', 'email', 'name', 'surname', 'birthdate', 'registeredAt'];
     dataSource = new MatTableDataSource<User>([]);
     resourceSelected: string = '';

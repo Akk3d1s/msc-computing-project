@@ -17,7 +17,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Select((state: any) => state.users) users$: Observable<User[]>;
 
-  title = 'Editing data using NGXS';
+  title = 'Editing data using App';
   displayedColumns: string[] = ['userId', 'status', 'username', 'email', 'name', 'surname', 'birthdate', 'registeredAt'];
   dataSource = new MatTableDataSource<User>([]);
   resourceSelected: string = '';
