@@ -49,7 +49,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit() {
         this.store.select(UserSelectors.getUsers)
             .pipe(takeUntil(this._unsubscribe$))
-            .subscribe((users: User[]) => {
+            .subscribe((users) => {
 
                 if (users.length) {
                     try {
