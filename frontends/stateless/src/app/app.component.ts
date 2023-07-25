@@ -44,9 +44,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    of({users: []})
+    of([])
       .pipe(takeUntil(this._unsubscribe$))
-      .subscribe(({users}) => {
+      .subscribe((users) => {
         if (users.length) {
           try {
             performance.mark('end');
