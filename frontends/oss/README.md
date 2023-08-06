@@ -4,7 +4,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Production build and server
 
-Run `npm run start:production` for a production build and server. Navigate to http://127.0.0.1:8080`.
+Run `npm run start:production` for a production build and server. Navigate to http://127.0.0.1:8080.
 
 ## Production Build
 
