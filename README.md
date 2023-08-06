@@ -2,7 +2,7 @@
 
 ## Running frontends
 
-- navigate to /frontends and to frontend of choice. Follow instructions in README.md there.
+- Navigate to /frontends and to frontend of choice. Follow instructions in README.md there.
 
 ## Running backend
 - Navigate to /backend. Follow instructions in README.md there.
