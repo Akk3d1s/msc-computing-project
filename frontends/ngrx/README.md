@@ -2,6 +2,10 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.0.
 
+
+## Installation
+Run `npm install`
+
 ## Production build and server
 
 Run `npm run start:production` for a production build and server. Navigate to http://127.0.0.1:8080.

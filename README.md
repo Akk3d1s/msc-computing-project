@@ -1,5 +1,9 @@
 # msc-computing-project
 
+
+## Prerequisites
+- Node (18.14.2) and npm (9.5.0)
+
 ## Running frontends
 
 - Navigate to /frontends and to frontend of choice. Follow instructions in README.md there.
